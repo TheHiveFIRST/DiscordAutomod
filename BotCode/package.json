@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/TheHiveFIRST/DiscordAutomod/issues"
   },
-  "homepage": "https://github.com/TheHiveFIRST/DiscordAutomod#readme",
-  "dependencies": {
-    "discord.js": "^14.15.3"
-  }
+  "homepage": "https://github.com/TheHiveFIRST/DiscordAutomod#readme"
 }
