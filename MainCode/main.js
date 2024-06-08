@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, ChannelType } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
@@ -65,6 +65,12 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
     const { commandName, options } = interaction;
+
+    // Check if the user has the 'MANAGE_GUILD' permission
+    if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
+        await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+        return;
+    }
 
     if (commandName === 'activate') {
         isActive = !isActive;
