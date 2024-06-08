@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
-const { MessageEmbed } = require('discord.js');
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
@@ -33,13 +32,13 @@ client.on('messageCreate', message => {
         message.delete()
             .then(() => {
                 // Send a log message to the #logs channel
-                const logsChannelId = '1248860649350762549'; // Replace 'YOUR_LOGS_CHANNEL_ID' with the actual channel ID
+                const logsChannelId = process.env.LOGS_CHANNEL_ID; // Replace 'YOUR_LOGS_CHANNEL_ID' with the actual channel ID
                 const logsChannel = message.guild.channels.cache.get(logsChannelId);
                 if (logsChannel) {
                     const embed = {
                         color: 0xff0000, // Integer color value for red
-                        title: 'Message Deleted Due to Inappropriate Language',
-                        description: `User: ${message.author}\nMessage: ${message.content}`,
+                        title: '**Message Deleted Due to Inappropriate Language**', // Bold title
+                        description: `**User:** <@${message.author.id}>\n**------------------------------**\n**Message:** \`${message.content}\`\n**------------------------------**\n **Channel:** ${message.channel}\n **------------------------------**\n*Date and Time:* ${new Date().toLocaleString()}`, // Bold and code block formatting
                         timestamp: new Date()
                     };
                     logsChannel.send({ embeds: [embed] });
