@@ -1,10 +1,9 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType } = require('discord.js');
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
 let isActive = true;
-
 let logsChannelId = process.env.LOGS_CHANNEL_ID;
 
 const client = new Client({
@@ -53,9 +52,7 @@ client.on('messageCreate', message => {
             .catch(err => console.error('Failed to delete the message:', err));
     }
 
-    // No need to send "I am a simple bot" message
-
-    // Your custom logic to determine the bot's response
+    // Custom logic to determine the bot's response
     if (message.content.toLowerCase() === 'hello') {
         message.channel.send('Hello! How can I assist you?');
     } else if (message.content.toLowerCase() === 'bye') {
@@ -71,16 +68,10 @@ client.on('interactionCreate', async interaction => {
 
     if (commandName === 'activate') {
         isActive = !isActive;
-        if (isActive){
-            await interaction.reply('Bot now moderating!');
-        }
-        else {
-            await interaction.reply('Bot no longer moderating!');
-        }
-        
+        await interaction.reply(`Bot is now ${isActive ? 'moderating' : 'no longer moderating'}.`);
     } else if (commandName === 'logschannel') {
         const channel = options.getChannel('logschannel');
-        if (channel.type !== 'GUILD_TEXT') {
+        if (channel.type !== ChannelType.GuildText) {
             await interaction.reply('Please select a text channel.');
             return;
         }

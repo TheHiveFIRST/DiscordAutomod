@@ -4,16 +4,15 @@ const { REST, Routes, SlashCommandBuilder, ChannelType } = require('discord.js')
 const commands = [
     new SlashCommandBuilder()
         .setName('activate')
-        .setDescription('Toggle if the bot is moderationg or not!'),
+        .setDescription('Toggle if the bot is moderating or not!'),
     new SlashCommandBuilder()
         .setName('logschannel')
         .setDescription('Set the channel that logs embed gets sent to')
-        .addChannelOption(option => option
-            .setName('logschannel')
-            .setDescription('The channel where logs get sent to')
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-        )
+        .addChannelOption(option => 
+            option.setName('logschannel')
+                .setDescription('The channel where logs get sent to')
+                .addChannelTypes(ChannelType.GuildText) // Only allow text channels
+                .setRequired(true))
 ]
 .map(command => command.toJSON());
 
