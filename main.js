@@ -3,6 +3,8 @@ const { Client, GatewayIntentBits } = require('discord.js');
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
+let isActive = true;
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -28,7 +30,7 @@ client.on('messageCreate', message => {
     if (message.author.bot) return;
 
     // Check if the message contains swear words
-    if (containsSwearWords(message.content)) {
+    if (isActive && containsSwearWords(message.content)) {
         message.delete()
             .then(() => {
                 // Send a log message to the #logs channel
@@ -66,8 +68,15 @@ client.on('interactionCreate', async interaction => {
 
     const { commandName } = interaction;
 
-    if (commandName === 'ping') {
-        await interaction.reply('Pong!');
+    if (commandName === 'activate') {
+        isActive = !isActive;
+        if (isActive){
+            await interaction.reply('Bot now moderating!');
+        }
+        else {
+            await interaction.reply('Bot no longer moderating!');
+        }
+        
     }
 });
 
