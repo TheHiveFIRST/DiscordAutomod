@@ -1,7 +1,6 @@
-process.env.DISCORD_TOKEN = 'MTI0ODA4NTgyMDU4NjMzMjIzMw.GIskzi.0Q5mO_NpLjBZ-swGMe3AM_S9vC52tixX9-nqmw'; // Directly setting the token for testing
-
 require('dotenv').config();
-const { Client, GatewayIntentBits, MessageEmbed } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
@@ -34,29 +33,31 @@ client.on('messageCreate', message => {
         message.delete()
             .then(() => {
                 // Send a log message to the #logs channel
-                const logsChannel = message.guild.channels.cache.find(channel => channel.name === 'logs');
+                const logsChannelId = '1248860649350762549'; // Replace 'YOUR_LOGS_CHANNEL_ID' with the actual channel ID
+                const logsChannel = message.guild.channels.cache.get(logsChannelId);
                 if (logsChannel) {
-                    const embed = new MessageEmbed()
-                        .setColor('#ff0000')
-                        .setTitle('Message Deleted Due to Inappropriate Language')
-                        .setDescription(`User: ${message.author}\nMessage: ${message.content}`)
-                        .setTimestamp();
+                    const embed = {
+                        color: 0xff0000, // Integer color value for red
+                        title: 'Message Deleted Due to Inappropriate Language',
+                        description: `User: ${message.author}\nMessage: ${message.content}`,
+                        timestamp: new Date()
+                    };
                     logsChannel.send({ embeds: [embed] });
                 } else {
                     console.error('Error: Logs channel not found.');
                 }
-                message.channel.send(`${message.author}, your message was deleted because it contains inappropriate language.`);
+                // No need to send a message to the user
             })
             .catch(err => console.error('Failed to delete the message:', err));
     }
+
+    // No need to send "I am a simple bot" message
 
     // Your custom logic to determine the bot's response
     if (message.content.toLowerCase() === 'hello') {
         message.channel.send('Hello! How can I assist you?');
     } else if (message.content.toLowerCase() === 'bye') {
         message.channel.send('Goodbye! Have a great day!');
-    } else {
-        message.channel.send('I am a simple bot and I did not understand that.');
     }
 });
 
