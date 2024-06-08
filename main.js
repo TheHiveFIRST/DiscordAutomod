@@ -60,4 +60,16 @@ client.on('messageCreate', message => {
     }
 });
 
+
+// Handling interactionCreate event for slash commands
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName } = interaction;
+
+    if (commandName === 'ping') {
+        await interaction.reply('Pong!');
+    }
+});
+
 client.login(process.env.DISCORD_TOKEN);
