@@ -78,7 +78,7 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply('Bot no longer moderating!');
         }
         
-    } else if (commandName === 'logs channel'){
+    } else if (commandName === 'logs channel'){ 9
         const channel = options.getChannel('logs channel');
         const channelId = channel.id;
         const targetChannel = client.channels.cache.get(channelId);

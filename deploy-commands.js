@@ -6,10 +6,10 @@ const commands = [
         .setName('activate')
         .setDescription('Toggle if the bot is moderationg or not!'),
     new SlashCommandBuilder()
-        .setName('logs channel')
+        .setName('logschannel')
         .setDescription('Set the channel that logs embed gets sent to')
         .addChannelOption(option => option
-            .setName('logs channel')
+            .setName('logschannel')
             .setDescription('The channel where logs get sent to')
             .setRequired(true)
         )
