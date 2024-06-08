@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, ChannelType } = require('discord.js');
 
 const commands = [
     new SlashCommandBuilder()
@@ -11,6 +11,7 @@ const commands = [
         .addChannelOption(option => option
             .setName('logschannel')
             .setDescription('The channel where logs get sent to')
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
         )
 ]

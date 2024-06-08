@@ -78,16 +78,14 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply('Bot no longer moderating!');
         }
         
-    } else if (commandName === 'logs channel'){ 9
-        const channel = options.getChannel('logs channel');
-        const channelId = channel.id;
-        const targetChannel = client.channels.cache.get(channelId);
-        logsChannelId = channelId;
-        if (targetChannel) {
-            await targetChannel.send(`Logs channel set to here!'}.`);
-        } else {
-            console.error('Error: Target channel not found.');
+    } else if (commandName === 'logschannel') {
+        const channel = options.getChannel('logschannel');
+        if (channel.type !== 'GUILD_TEXT') {
+            await interaction.reply('Please select a text channel.');
+            return;
         }
+        logsChannelId = channel.id;
+        await interaction.reply(`Logs channel set to ${channel.name}.`);
     }
 });
 
