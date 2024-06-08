@@ -3,6 +3,15 @@ const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require(
 
 const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
+//Port Binding because Render
+const express = require('express')
+const app = express()
+const port = process.env.PORT || 4000;
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
+
 //Is the bot moderating
 let isActive = true;
 
