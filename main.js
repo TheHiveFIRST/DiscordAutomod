@@ -60,7 +60,6 @@ client.on('messageCreate', message => {
     }
 });
 
-
 // Handling interactionCreate event for slash commands
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
