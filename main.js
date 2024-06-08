@@ -5,6 +5,8 @@ const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
 
 let isActive = true;
 
+let logsChannelId = process.env.LOGS_CHANNEL_ID;
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -34,7 +36,6 @@ client.on('messageCreate', message => {
         message.delete()
             .then(() => {
                 // Send a log message to the #logs channel
-                const logsChannelId = process.env.LOGS_CHANNEL_ID; // Replace 'YOUR_LOGS_CHANNEL_ID' with the actual channel ID
                 const logsChannel = message.guild.channels.cache.get(logsChannelId);
                 if (logsChannel) {
                     const embed = {
@@ -66,7 +67,7 @@ client.on('messageCreate', message => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    const { commandName } = interaction;
+    const { commandName, options } = interaction;
 
     if (commandName === 'activate') {
         isActive = !isActive;
@@ -77,6 +78,16 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply('Bot no longer moderating!');
         }
         
+    } else if (commandName === 'logs channel'){
+        const channel = options.getChannel('logs channel');
+        const channelId = channel.id;
+        const targetChannel = client.channels.cache.get(channelId);
+        logsChannelId = channelId;
+        if (targetChannel) {
+            await targetChannel.send(`Logs channel set to here!'}.`);
+        } else {
+            console.error('Error: Target channel not found.');
+        }
     }
 });
 

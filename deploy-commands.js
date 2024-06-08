@@ -1,12 +1,20 @@
 require('dotenv').config();
-const { REST, Routes } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 
 const commands = [
-    {
-        name: 'activate',
-        description: 'Toggles moderation',
-    },
-];
+    new SlashCommandBuilder()
+        .setName('activate')
+        .setDescription('Toggle if the bot is moderationg or not!'),
+    new SlashCommandBuilder()
+        .setName('logs channel')
+        .setDescription('Set the channel that logs embed gets sent to')
+        .addChannelOption(option => option
+            .setName('logs channel')
+            .setDescription('The channel where logs get sent to')
+            .setRequired(true)
+        )
+]
+.map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
