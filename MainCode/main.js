@@ -109,7 +109,7 @@ client.on('messageCreate', message => {
 
 // Event to log deleted messages
 client.on('messageDelete', message => {
-    if (message.partial) return; // Skip partial messages
+    if (message.partial || message.author.bot) return; // Skip partial and bot messages
 
     // Get the logs channel ID for the guild
     const logsChannelId = getLogsChannelId(message.guild.id);
@@ -134,7 +134,7 @@ client.on('messageDelete', message => {
 // Event to log edited messages
 client.on('messageUpdate', (oldMessage, newMessage) => {
     if (oldMessage.partial || newMessage.partial) return; // Skip partial messages
-    if (oldMessage.content === newMessage.content) return; // Skip if the content is the same
+    if (oldMessage.author.bot || oldMessage.content === newMessage.content) return; // Skip bot messages and no changes
 
     // Get the logs channel ID for the guild
     const logsChannelId = getLogsChannelId(oldMessage.guild.id);
