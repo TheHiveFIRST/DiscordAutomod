@@ -40,7 +40,7 @@ function setLogsChannelId(guildId, channelId) {
     writeLogsChannels(logsChannels);
 }
 
-//Is the bot moderating
+// Is the bot moderating
 let isActive = true;
 
 const client = new Client({
@@ -104,6 +104,55 @@ client.on('messageCreate', message => {
                 }
             })
             .catch(err => console.error('Failed to delete the message:', err));
+    }
+});
+
+// Event to log deleted messages
+client.on('messageDelete', message => {
+    if (message.partial) return; // Skip partial messages
+
+    // Get the logs channel ID for the guild
+    const logsChannelId = getLogsChannelId(message.guild.id);
+    if (logsChannelId) {
+        const logsChannel = message.guild.channels.cache.get(logsChannelId);
+        if (logsChannel) {
+            const embed = {
+                color: 0xff0000, // Red color
+                title: '**Message Deleted**',
+                description: `**User:** <@${message.author.id}>\n**Message:** \`${message.content}\`\n**Channel:** ${message.channel}\n*Date and Time:* ${new Date().toLocaleString()}`,
+                timestamp: new Date()
+            };
+            logsChannel.send({ embeds: [embed] });
+        } else {
+            console.error('Error: Logs channel not found.');
+        }
+    } else {
+        console.error('Error: Logs channel not set for this guild.');
+    }
+});
+
+// Event to log edited messages
+client.on('messageUpdate', (oldMessage, newMessage) => {
+    if (oldMessage.partial || newMessage.partial) return; // Skip partial messages
+    if (oldMessage.content === newMessage.content) return; // Skip if the content is the same
+
+    // Get the logs channel ID for the guild
+    const logsChannelId = getLogsChannelId(oldMessage.guild.id);
+    if (logsChannelId) {
+        const logsChannel = oldMessage.guild.channels.cache.get(logsChannelId);
+        if (logsChannel) {
+            const embed = {
+                color: 0xffa500, // Orange color
+                title: '**Message Edited**',
+                description: `**User:** <@${oldMessage.author.id}>\n**Before:** \`${oldMessage.content}\`\n**After:** \`${newMessage.content}\`\n**Channel:** ${oldMessage.channel}\n*Date and Time:* ${new Date().toLocaleString()}`,
+                timestamp: new Date()
+            };
+            logsChannel.send({ embeds: [embed] });
+        } else {
+            console.error('Error: Logs channel not found.');
+        }
+    } else {
+        console.error('Error: Logs channel not set for this guild.');
     }
 });
 
