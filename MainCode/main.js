@@ -2,15 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-
-//Port Binding because Render
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 4000;
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+const express = require('express');
 
 //Is the bot moderating
 let isActive = true;
@@ -119,3 +111,16 @@ client.on('interactionCreate', async interaction => {
 
 //Connect bot to discord
 client.login(process.env.DISCORD_TOKEN);
+
+
+// Set up an express server to handle the keep-alive endpoint
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('Bot is running!');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
