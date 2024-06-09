@@ -109,7 +109,8 @@ client.on('messageCreate', message => {
 
 // Event to log deleted messages
 client.on('messageDelete', message => {
-    if (message.partial || message.author.bot) return; // Skip partial and bot messages
+    if (message.partial) return; // Skip partial and bot messages
+    if (message.author.bot) return; // Skip bot messages
 
     // Get the logs channel ID for the guild
     const logsChannelId = getLogsChannelId(message.guild.id);
