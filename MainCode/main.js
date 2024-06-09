@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
-
-const swearWords = ['badword1', 'badword2', 'badword3']; // List of swear words
+const fs = require('fs');
+const path = require('path');
 
 //Port Binding because Render
 const express = require('express')
@@ -26,11 +26,25 @@ const client = new Client({
     ]
 });
 
+// Function to read swear words from the file
+function getSwearWords() {
+    const filePath = path.join(__dirname, 'swearwords.txt');
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return data.split(/\r?\n/).filter(Boolean); // Split by new lines and filter out empty lines
+    } catch (err) {
+        console.error('Error reading swear words file:', err);
+        return [];
+    }
+}
+
 // Function to check if a message contains swear words
 function containsSwearWords(messageContent) {
+    const swearWords = getSwearWords(); // Read the latest swear words from the file
     const content = messageContent.toLowerCase(); // Convert message content to lowercase
     return swearWords.some(swear => content.includes(swear)); // Check if any swear word is included in the message
 }
+
 
 // Event to execute when the bot is ready
 client.once('ready', () => {
