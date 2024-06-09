@@ -4,11 +4,44 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
-// Is the bot moderating
-let isActive = true;
+// Path to the JSON file
+const logsChannelsFilePath = path.join(__dirname, 'logsChannels.json');
 
-// Channel id for the log messages
-let logsChannelId = null;
+// Function to read logs channels from the file
+function readLogsChannels() {
+    try {
+        const data = fs.readFileSync(logsChannelsFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error('Error reading logs channels file:', err);
+        return {};
+    }
+}
+
+// Function to write logs channels to the file
+function writeLogsChannels(logsChannels) {
+    try {
+        fs.writeFileSync(logsChannelsFilePath, JSON.stringify(logsChannels, null, 2));
+    } catch (err) {
+        console.error('Error writing logs channels file:', err);
+    }
+}
+
+// Function to get the logs channel ID for a guild
+function getLogsChannelId(guildId) {
+    const logsChannels = readLogsChannels();
+    return logsChannels[guildId] || null;
+}
+
+// Function to set the logs channel ID for a guild
+function setLogsChannelId(guildId, channelId) {
+    const logsChannels = readLogsChannels();
+    logsChannels[guildId] = channelId;
+    writeLogsChannels(logsChannels);
+}
+
+//Is the bot moderating
+let isActive = true;
 
 const client = new Client({
     intents: [
@@ -49,22 +82,25 @@ client.on('messageCreate', message => {
 
     // Check if the message contains swear words
     if (isActive && containsSwearWords(message.content)) {
-        message.delete() // Remove the message
+        message.delete()  //Remove the message
             .then(() => {
-                // Send a log message to the #logs channel
-                const logsChannel = message.guild.channels.cache.get(logsChannelId); // Get the logs channel
-
-                if (logsChannel) {
-                    const embed = { // Make an embed
-                        color: 0xff0000, // Integer color value for red
-                        title: '**Message Deleted Due to Inappropriate Language**', // Bold title
-                        description: `**User:** <@${message.author.id}>\n**------------------------------**\n**Message:** \`${message.content}\`\n**------------------------------**\n **Channel:** ${message.channel}\n **------------------------------**\n*Date and Time:* ${new Date().toLocaleString()}`, // Bold and code block formatting
-                        timestamp: new Date() // Add date and time
-                    };
-                    logsChannel.send({ embeds: [embed] }); // Send the Embed
+                // Get the logs channel ID for the guild
+                const logsChannelId = getLogsChannelId(message.guild.id);
+                if (logsChannelId) {
+                    const logsChannel = message.guild.channels.cache.get(logsChannelId);
+                    if (logsChannel) {
+                        const embed = { //Make an embed
+                            color: 0xff0000, // Integer color value for red
+                            title: '**Message Deleted Due to Inappropriate Language**', // Bold title
+                            description: `**User:** <@${message.author.id}>\n**------------------------------**\n**Message:** \`${message.content}\`\n**------------------------------**\n **Channel:** ${message.channel}\n **------------------------------**\n*Date and Time:* ${new Date().toLocaleString()}`, // Bold and code block formatting
+                            timestamp: new Date() //Add date and time
+                        };
+                        logsChannel.send({ embeds: [embed] }); //Send the Embed
+                    } else {
+                        console.error('Error: Logs channel not found.');
+                    }
                 } else {
-                    // If no logs channel
-                    console.error('Error: Logs channel not found.');
+                    console.error('Error: Logs channel not set for this guild.');
                 }
             })
             .catch(err => console.error('Failed to delete the message:', err));
@@ -83,28 +119,28 @@ client.on('interactionCreate', async interaction => {
         return;
     }
 
-    // Activate moderation command
+    //Activate moderation command
     if (commandName === 'activate') {
         isActive = !isActive;
         await interaction.reply(`Bot is now ${isActive ? 'moderating' : 'no longer moderating'}.`);
-    }
-    // Set logs channel command
+    } 
+    //Set logs channel command
     else if (commandName === 'logschannel') {
-        const channel = options.getChannel('logschannel'); // Get the specified channel
+        const channel = options.getChannel('logschannel'); //Get the specified channel
 
-        // Make sure it's only a text channel
+        //Make sure it's only a text channel
         if (channel.type !== ChannelType.GuildText) {
             await interaction.reply('Please select a text channel.');
             return;
         }
-        // Get channel id
-        logsChannelId = channel.id;
+        //Set the logs channel ID for this guild
+        setLogsChannelId(interaction.guild.id, channel.id);
 
         await interaction.reply(`Logs channel set to ${channel.name}.`);
     }
 });
 
-// Connect bot to discord
+//Connect bot to discord
 client.login(process.env.DISCORD_TOKEN);
 
 // Set up an express server to handle the keep-alive endpoint
